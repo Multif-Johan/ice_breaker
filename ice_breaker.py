@@ -1,4 +1,5 @@
 import os
+import requests
 from dotenv import load_dotenv,dotenv_values
 from langchain.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
@@ -19,21 +20,44 @@ Musk has expressed views that have made him a polarizing figure.[7] He has been 
 
 if __name__ == '__main__':
     print("hello LangChain!")
-#Prompt Template    
+
+#ACESSS MODEL
+     
+   #Prompt Template    
     summary_template = """
         given the information {information} about a person form I want you to create:
         1. a short summary
         2. two interesting facats about them
 
-    """
-#Feeds information about prompt template
+        """
+    #Feeds information about prompt template
     summary_prompt_template = PromptTemplate(
         input_variables={"information"},template=summary_template
         )
 
-#Select the model and temperature   
+    #Select the model and temperature   
     llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo")
-# LLMChain feeds llm var and propmt var made before)
+    # LLMChain feeds llm var and propmt var made before)
     chain = LLMChain(llm=llm, prompt=summary_prompt_template)
 
-    print(chain.run(information=information))
+#Deprecated
+    #print(chain.run(information=information))
+
+#IF USING API FROM PROXYURL
+#linkedin_data = scrape_linkedin_profile(linkedin_profile_url='https://www.linkedin.com/in/harrison-chase-961287118/')
+#print(linkedin_data.json())
+
+gist_response = requests.get("https://gist.githubusercontent.com/Multif-Johan/ccc5e88c748232c7dabbc1eb4fb03192/raw/17d34c86b5479fbc8d4534ece5b7a6dd08abd93d/eden-marco.json")
+data = gist_response.json()
+data = {
+    k: v
+    for k,v in data.items()
+    if v not in ([], "", "", None)
+        and k not in ["people_also_viewed", "certifications"]
+}
+
+if data.get("groups"):
+    for group_dict in data.get("groups"):
+        group_dict.pop("profile_pic_url")
+
+print(chain.run(information=data))
