@@ -61,3 +61,4 @@ if data.get("groups"):
         group_dict.pop("profile_pic_url")
 
 print(chain.run(information=data))
+#print(chain.run(information=linkedin_data))
